@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+    <Title>Technical Documentation</Title>
+    </head>
+    <body>
+       <nav id="navbar">
+           <header>Flask Documentation</header>
+           <ul class="navlist">
+               <li><a href="#Introduction_To_Flask" class="nav-link">Introduction To Flask.</a></li>
+               <li><a href="#Foreword" class="nav-link">Foreword.</a></li>
+               <li><a href="#Quikstart" class="nav-link">Quickstart.</a></li>
+               <li><a href="#Running_The_Flask_App" class="nav-link">Running The Flask App.</a></li>
+               <li><a href="#What_to_do_if_the_server_does_not_start" class="nav-link">What To Do If The Server Does Not Start.</a></li>
+               <li><a href="#Invalid_Import_Name" class="nav-link">Invalid Import Name.</a></li>
+               <li><a href="#Old_Version_of_Flask">Old Version Of Flask</a></li>
+               <li><a href="#Debug_Mode">Debug Mode</a></li>
+           </ul>
+       </nav>
+        <main id="main-doc">
+            <section class="main-section" id="Introduction_To_Flask">
+                <header id="header">Introduction To Flask</header>
+                <p>Flask is a micro web framework written in Python.
+                    It is classified as a microframework because it does not require particular tools or libraries.
+                    It has no database abstraction layer, form validation, or any other components where pre-existing third-party libraries provide common functions.</p>
+            </section>
+            <section class="main-section" id="Foreword">
+                <header>Foreword</header>
+                    <p>Read this before you get started with Flask. This hopefully answers some questions about the purpose and goals of the project, and when you should or should not be using it.</p>
+                <p><h2>What does “micro” mean?</h2>
+                    “Micro” does not mean that your whole web application has to fit into a single Python file (although it certainly can), nor does it mean that Flask is lacking in functionality. The “micro” in microframework means Flask aims to keep the core simple but extensible. Flask won’t make many decisions for you, such as what database to use. Those decisions that it does make, such as what templating engine to use, are easy to change. Everything else is up to you, so that Flask can be everything you need and nothing you don’t.
+                    
+                    By default, Flask does not include a database abstraction layer, form validation or anything else where different libraries already exist that can handle that. Instead, Flask supports extensions to add such functionality to your application as if it was implemented in Flask itself. Numerous extensions provide database integration, form validation, upload handling, various open authentication technologies, and more. Flask may be “micro”, but it’s ready for production use on a variety of needs.</p>
+                <p><h3>Growing with Flask</h3>
+                    Once you have Flask up and running, you’ll find a variety of extensions available in the community to integrate your project for production. The Flask core team reviews extensions and ensures approved extensions do not break with future releases.
+                    
+                    As your codebase grows, you are free to make the design decisions appropriate for your project. Flask will continue to provide a very simple glue layer to the best that Python has to offer. You can implement advanced patterns in SQLAlchemy or another database tool, introduce non-relational data persistence as appropriate, and take advantage of framework-agnostic tools built for WSGI, the Python web interface.
+                    
+                    Flask includes many hooks to customize its behavior. Should you need more customization, the Flask class is built for subclassing. If you are interested in that, check out the Becoming Big chapter. If you are curious about the Flask design principles, head over to the section about Design Decisions in Flask.</p>
+            </section>
+            <section class="main-section" id="Quikstart">
+                <header>Quickstart</header>
+                    <p>Eager to get started? This page gives a good introduction to Flask. It assumes you already have Flask installed. If you do not, head over to the Installation section.
+                    
+                    <h3>A Minimal Application</h3>
+                    A minimal Flask application looks something like this:
+                    
+                    <code class="code">from flask import Flask
+                    app = Flask(__name__)
+                    
+                    @app.route('/')
+                    def hello_world():
+                        return 'Hello, World!'
+                        </code>
+                    So what did that code do?
+                    <ol>
+                    
+                    <li>First we imported the Flask class. An instance of this class will be our WSGI application.</li>
+                    
+                    <li>Next we create an instance of this class. The first argument is the name of the application’s module or package.
+                        If you are using a single module (as in this example), you should use <code class="code">__name__</code> because depending on if it’s started as application or imported as module the name will be different ('__main__' versus the actual import name).
+                        This is needed so that Flask knows where to look for templates, static files, and so on. For more information have a look at the Flask documentation.
+                    
+                    <li>We then use the <code class="code">route()</code> decorator to tell Flask what URL should trigger our function.
+                    
+                    <li>The function is given a name which is also used to generate URLs for that particular function, and returns the message we want to display in the user’s browser.</p>
+            </section>
+            <section class="main-section" id="Running_The_Flask_App">
+                <header>Running The Flask App</header>
+                <p>Just save it as hello.py or something similar. Make sure to not call your application flask.py because this would conflict with Flask itself.
+
+                    To run the application you can either use the flask command or python’s -m switch with Flask. Before you can do that you need to tell your terminal the application to work with by exporting the FLASK_APP environment variable:
+                    
+                   <code class="code">$ export FLASK_APP=hello.py
+                    $ flask run
+                     * Running on http://127.0.0.1:5000/
+                   </code>
+                    If you are on Windows, the environment variable syntax depends on command line interpreter. On Command Prompt:
+                   <code class="code">C:\path\to\app>set FLASK_APP=hello.py</code>
+                </p>
+                <p>
+                    And on PowerShell:
+                    
+                    <code class="code">PS C:\path\to\app> $env:FLASK_APP = "hello.py"</code>
+                    Alternatively you can use python -m flask:
+                    
+                    <code class="code">$ export FLASK_APP=hello.py</code>
+                    <code class="code">$ python -m flask run</code>
+                     * Running on http://127.0.0.1:5000/
+                    This launches a very simple builtin server, which is good enough for testing but probably not what you want to use in production. For deployment options see Deployment Options.
+                    
+                    Now head over to http://127.0.0.1:5000/, and you should see your hello world greeting.
+                    
+                    Externally Visible Server
+                    If you run the server you will notice that the server is only accessible from your own computer, not from any other in the network. This is the default because in debugging mode a user of the application can execute arbitrary Python code on your computer.
+                    
+                    If you have the debugger disabled or trust the users on your network, you can make the server publicly available simply by adding --host=0.0.0.0 to the command line:
+                    
+                    <code class="code">$ flask run --host=0.0.0.0</code>
+                    This tells your operating system to listen on all public IPs.</p>
+                </p>
+            </section>
+            <section class="main-section" id="What_to_do_if_the_server_does_not_start">
+                <header>What to do if the Server does not Start</header>
+                    <p>In case the <code class="code">python -m</code>flask fails or flask does not exist, there are multiple reasons this might be the case. First of all you need to look at the error message.
+                </p>
+                    <p><h4 id="#Old_Version_of_Flask">Old Version of Flask</h4>
+                    Versions of Flask older than 0.11 used to have different ways to start the application.
+                    In short, the flask command did not exist, and neither did python -m flask. In that case you have two options: either upgrade to newer Flask versions or have a look at the Development Server docs to see the alternative method for running a server.
+                    </p>
+                </section>
+            <section class="main-section" id="Invalid_Import_Name">
+                <header>Invalid Import Name</header>
+                    <p>The <code class="code">FLASK_APP</code> environment variable is the name of the module to import at flask run. In case that module is incorrectly named you will get an import error upon start (or if debug is enabled when you navigate to the application). It will tell you what it tried to import and why it failed.
+                    
+                    The most common reason is a typo or because you did not actually create an app object.</p>
+                <header id="#Debug_Mode">Debug Mode</header>
+                    <p>(Want to just log errors and stack traces? See Application Errors)
+                    
+                    The flask script is nice to start a local development server, but you would have to restart it manually after each change to your code. That is not very nice and Flask can do better. If you enable debug support the server will reload itself on code changes, and it will also provide you with a helpful debugger if things go wrong.
+                    
+                    To enable all development features (including debug mode) you can export the <code class="code">FLASK_ENV</code> environment variable and set it to development before running the server:
+                    
+                    <code class="code">$ export FLASK_ENV=development</code>
+                   <code class="code">$ flask run</code>
+                    (On Windows you need to use set instead of export.)
+                    
+                    This does the following things:
+                    
+                    it activates the debugger
+                    
+                    it activates the automatic reloader
+                    
+                    it enables the debug mode on the Flask application.
+                    
+                    You can also control debug mode separately from the environment by exporting <code class="code">FLASK_DEBUG=1.</code>
+                    
+                    There are more parameters that are explained in the <a href="https://flask.palletsprojects.com/en/1.1.x/server/#server" target="_blank">Development Server docs.</a></p>
+            </section>
+
+        </main>
+
+    </body>
+</html>
